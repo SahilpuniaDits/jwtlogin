@@ -5,11 +5,13 @@ from rest_framework import generics
 
 from rest_framework import status
 from rest_framework import serializers
+from rest_framework import response
 from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.permissions import IsAuthenticated
+# from rest_framework.decorators import list_route
 
 from .serializers import (
     UserRegistrationSerializer,
@@ -17,6 +19,7 @@ from .serializers import (
     ChangePasswordSerializer
     # UserListSerializer
 )
+# from utils import res_codes
 import jwt
 from .models import User
 
@@ -91,36 +94,34 @@ class idView(APIView):
 
 # change password 
 class ChangePasswordView(generics.UpdateAPIView):
+    # permission_classes = (AllowAny, )
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = ChangePasswordSerializer
-    permission_classes = (AllowAny, )
+    print("helooooooooooooooooooo<<<<<<<<<<<<<<<<<<<<<")
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+        
+        
 
     # def put(self, request):
-    #     serializer = self.serializer_class(data=request.data)
-    #     valid = serializer.is_valid(raise_exception=True)
-    #     decode = jwt.decode(serializer.data['access'], options={
-    #                         "verify_signature": False})
-    #     print(">>>>>>>>>>>>>>>>>", decode)
-    #     id = decode.get("user_id")
-    #     if valid:
-    #         status_code = status.HTTP_200_OK
+    #     print("helooooooooooooooooooo^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    #     serializer = ChangePasswordSerializer(data=request.data)
+        
+    #     if serializer.is_valid():
+    #         print("sahil____________________________")
+    #         if not serializer.check_password(serializer.data.get('password')):
+    #             print("punia...................................................")
+    #             return Response({'password': ['Wrong password.']}, 
+    #                             status=status.HTTP_400_BAD_REQUEST)
+    #         # set_password also hashes the password that the user will get
+    #         serializer.set_password(serializer.data.get('new_password'))
+    #         serializer.save()
+    #         return Response({'status': 'password set'}, status=status.HTTP_200_OK)
+    #     print("hello..........")
+    #     return Response(serializer.errors,
+    #                     status=status.HTTP_400_BAD_REQUEST)
 
-    #         response = {
-    #            'id':id,
-    #             }
-          
-    #         return Response(response, status=status_code)
     
-    
 
-
-     # try:
-        # acces = Serializer.data['access'] 
-        # print("hellooooooo<<<<<<<<<<<<<<<<<<<<<<",acces)
-        # jwt.decode(acces, "SECRET_KEY", algorithms=["HS256"])
-        # decodedPayload = jwt.decode(token,None,None) 
-    # except Exception as e:
-    #     import traceback
-    #     print("<<<<<", traceback.format_exc())
-    #     print(">>>>>>>excption", e)                

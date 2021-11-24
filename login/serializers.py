@@ -1,13 +1,20 @@
 from os import access
+from django.db import models
 # from typing_extensions import Required
 from rest_framework import status
+from rest_framework import response
 from rest_framework.response import Response
+
+
 
 from .models import User
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken, Token
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.hashers import check_password
+# from utils import res_codes
+
 import jwt
 from rest_framework.permissions import IsAuthenticated
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -67,7 +74,7 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
     New_password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     Confirm_password = serializers.CharField(write_only=True, required=True)
     old_password = serializers.CharField(write_only=True, required=True)
-    # access = serializers.CharField()
+ 
 
     class Meta:
         model = User
@@ -81,38 +88,20 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
     def validate_old_password(self,value):
         user = self.context['request'].user
+
         if not user.check_password(value):
             raise serializers.ValidationError({"old_password": "Old password is not correct"})
         return value
     def update(self, instance, validated_data):
         user = self.context['request'].user
-        # serializer = self.serializer_class(data=request.data)
-        # valid = user.is_valid(raise_exception=True)
-        # decode = jwt.decode(instance['access'], options={
-        #                     "verify_signature": False})
-        # id = decode.get("user_id")
-        # if id != id:
-            # status_code = status.HTTP_200_OK
-
-            # response = {
-            #    'id':id,
-            #     }
-          
-            # return Response(response, status=status_code)
-                        
-
         if user.pk != instance.pk:
             raise serializers.ValidationError({"authorize": "You dont have permission for this user."})
-
-        instance.set_password(validated_data['password'])
+        
+        instance.set_password(validated_data['New_password'])
         instance.save()
 
         return instance
 
         
-    # def getaccess(self,email):
+   
 
-    #     email.data[access]
-    #     email.save()
-
-    #     return email
